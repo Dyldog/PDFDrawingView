@@ -11,7 +11,7 @@ import UIKit
 
 class DrawingLine: Line{
     private var scale: CGFloat{
-        return self.drawingType == .highlight ? 8 : 2
+        return 0.3 // self.drawingType == .highlight ? 8 : 2
     }
     private var strokes: [Stroke] = [Stroke]()
     private var touchToStroke = [NSNumber: Int]()
@@ -107,13 +107,13 @@ class DrawingLine: Line{
 	init(points: [CGPoint], opacity: Float, color: CGColor, lineWidth: CGFloat, drawingType: DrawingTypes){
         self.opacity = opacity
         self.color = color
-        self.lineWidth = lineWidth
         self.drawingType = drawingType
         super.init(startingPoint: points[0])
         self.points = points
         self.layer.fillColor = color
         self.layer.opacity = opacity
         self.layer.strokeColor = nil
+        self.layer.lineWidth = 10
     }
 	
 	// Convenience constructor
@@ -138,11 +138,11 @@ class DrawingLine: Line{
             newPath.addStrokeToPath(stroke: Stroke(force: strokes.last!.force, vector: vector, location: point), previousPoints: &previousPoints)
             previousPoint = point
         }
-        newPath.lineWidth = lineWidth
+        newPath.lineWidth = 1
         return newPath
     }
     
-    private(set) var lineWidth: CGFloat
+    let lineWidth: CGFloat = 1
     
     private var boundingBox: CGRect{
         return path.bounds
@@ -214,7 +214,10 @@ class DrawingLine: Line{
         if (self.layer.path == nil){
 			self.layer.fillRule = CAShapeLayerFillRule.nonZero
         }
+        self.layer.lineWidth = 1
+        newPath.lineWidth = 0
         self.layer.path = newPath.cgPath
+        self.layer.lineWidth = 1
     }
 }
 
@@ -228,6 +231,7 @@ fileprivate extension UIBezierPath{
         self.addLine(to: actualTop)
         self.addQuadCurve(to: lastPoints.1, controlPoint: lastPoints.1.midPoint(with: actualTop))
         self.addLine(to: lastPoints.0)
+        self.lineWidth = 1
         previousPoints = (actualBottom, actualTop)
     }
 }
